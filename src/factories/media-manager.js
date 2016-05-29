@@ -1,4 +1,4 @@
-angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', '$window', function ($interval, $timeout, $window) {
+angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', '$window', '$rootScope', function ($interval, $timeout, $window, $rootScope) {
     var tracks = [], currentTrack, currentMedia, playerTimer;
 
     if (!$window.cordova && !$window.Media) {
@@ -78,6 +78,7 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
                 return;
             } else {
                 if (currentTrack.id > -1) {
+                    $rootScope.$emit('track.stoped', currentTrack.status);
                     stop();
                 }
             }
@@ -102,6 +103,7 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
     }
 
     function destroy() {
+        $rootScope.$emit('track.destroyed', 'toto');
         stopTimer();
         releaseMedia();
     }
@@ -125,6 +127,7 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
     }
 
     function stop() {
+        $rootScope.$emit('track.destroyed', 'toto');
         if (currentMedia){
             console.log('ionic-audio: stopping track ' + currentTrack.title);
             currentMedia.stop();    // will call onSuccess...
@@ -173,6 +176,7 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
 
     function stopTimer() {
         if (angular.isDefined(playerTimer)) {
+            $rootScope.$emit('track.stopped', 'toto');
             $interval.cancel(playerTimer);
             playerTimer = undefined;
         }
