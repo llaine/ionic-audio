@@ -102,8 +102,6 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
     }
 
     function destroy() {
-        $rootScope.$broadcast('track.stopped', 'toto');
-        $rootScope.$emit('track.stopped', 'toto')
         stopTimer();
         releaseMedia();
     }
@@ -127,9 +125,6 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
     }
 
     function stop() {
-        $rootScope.$broadcast('track.stopped', 'toto');
-        $rootScope.$emit('track.stopped', 'toto');
-
         if (currentMedia){
             console.log('ionic-audio: stopping track ' + currentTrack.title);
             currentMedia.stop();    // will call onSuccess...
