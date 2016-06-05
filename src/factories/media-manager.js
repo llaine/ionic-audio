@@ -176,9 +176,19 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
             function isNext()  {
                 var duration = parseInt(currentMedia.getDuration());
                 var progression = parseInt(currentTrack.progress);
-                return progression == duration;
+                console.log(progression)
+                console.log(duration)
+                return progression == duration || progression + 1 == duration;
             }
-            $rootScope.$emit('track.stopped', isNext());
+
+            var passToNext = isNext();
+
+            if(passToNext) {
+                console.log('pass to next')
+                stop();
+            }
+
+            $rootScope.$emit('track.stopped', passToNext);
 
             $interval.cancel(playerTimer);
             playerTimer = undefined;

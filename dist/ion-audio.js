@@ -17,26 +17,6 @@ limitations under the License.
 */
 angular.module('ionic-audio', ['ionic']);
 
-angular.module('ionic-audio').filter('time', function () {
-	var addLeadingZero = function(n) {
-        return (new Array(2).join('0')+n).slice(-2)
-    };
-
-    return function(input) {
-        input = input || 0;
-        var t = parseInt(input);
-        return addLeadingZero(Math.floor(t / 60)) + ':' + addLeadingZero(t % 60);
-    };
-});
-
-
-angular.module('ionic-audio').filter('duration', ['$filter', function ($filter) {
-    return function (input) {
-        return (input > 0) ? $filter('time')(input) : '';
-    };
-}]);
-
-
 angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', '$window', '$rootScope', function ($interval, $timeout, $window, $rootScope) {
     var tracks = [], currentTrack, currentMedia, playerTimer;
 
@@ -215,9 +195,19 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
             function isNext()  {
                 var duration = parseInt(currentMedia.getDuration());
                 var progression = parseInt(currentTrack.progress);
-                return progression == duration;
+                console.log(progression)
+                console.log(duration)
+                return progression == duration || progression + 1 == duration;
             }
-            $rootScope.$emit('track.stopped', isNext());
+
+            var passToNext = isNext();
+
+            if(passToNext) {
+                console.log('pass to next')
+                stop();
+            }
+
+            $rootScope.$emit('track.stopped', passToNext);
 
             $interval.cancel(playerTimer);
             playerTimer = undefined;
@@ -252,6 +242,26 @@ angular.module('ionic-audio').factory('MediaManager', ['$interval', '$timeout', 
         }, 1000);
     }
 }]);
+angular.module('ionic-audio').filter('time', function () {
+	var addLeadingZero = function(n) {
+        return (new Array(2).join('0')+n).slice(-2)
+    };
+
+    return function(input) {
+        input = input || 0;
+        var t = parseInt(input);
+        return addLeadingZero(Math.floor(t / 60)) + ':' + addLeadingZero(t % 60);
+    };
+});
+
+
+angular.module('ionic-audio').filter('duration', ['$filter', function ($filter) {
+    return function (input) {
+        return (input > 0) ? $filter('time')(input) : '';
+    };
+}]);
+
+
 angular.module('ionic-audio').directive('ionAudioTrack', ['MediaManager', '$rootScope', ionAudioTrack]);
 
 function ionAudioTrack(MediaManager, $rootScope) {
